@@ -155,26 +155,55 @@ def isEmpty[A](l: List[A]) = l match {
   case x :: y => false
 }
 
-
 /* Exercise 11 */
-def map[A, B](f: A => B, l: List[A]): List[B] = sys.error("todo")
+def map[A, B](f: A => B, l: List[A]): List[B] = l match {
+  case Nil => Nil;
+  case head :: tail => f(head) :: map(f, tail);
+}
 
 /* Exercise 12 */
-def filter[A](f: A => Boolean, l: List[A]): List[A] = sys.error("todo")
+def filter[A](f: A => Boolean, l: List[A]): List[A] = l match {
+  case Nil => Nil;
+  case head :: tail => 
+    if (f(head)) {
+      head :: filter(f, tail);
+    } else {
+      filter(f, tail);
+    }
+}
 
 /* Exercise 13 */
-def reverse[A](l: List[A]): List[A] = sys.error("todo")
-
+def reverse[A](l: List[A]): List[A] = l match {
+  case Nil => Nil;
+  case head :: tail => reverse(tail) :+ head;
+}
 
 /* Part 6 */
 
 def empty[K,V]: List[(K,V)] = List()
 
 /* Exercise 14 */
-def lookup[K, V](m: List[(K, V)], k: K): V = sys.error("todo")
+def lookup[K, V](m: List[(K, V)], k: K): V = l match {
+  case Nil => Nil;
+  case (key, value) :: tail => 
+    if (key == k) {
+      value
+    } else {
+      lookup(tail, k)
+    }
+}
 
 /* Exercise 15 */
-def update[K, V](m: List[(K, V)], k: K, v: V): List[(K, V)] = sys.error("todo")
+//RUN
+def update[K, V](m: List[(K, V)], k: K, v: V): List[(K, V)] = l match {
+  case Nil => Nil;
+  case (key, value) :: tail =>
+    if (key == k){
+      (key : v) :: tail
+    } else {
+      (key, value) :: update(tail, k, v)
+    }
+}
 
 /* Exercise 16 */
 def keys[K,V](m: List[(K,V)]): List[K] = sys.error("todo")
