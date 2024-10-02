@@ -17,7 +17,6 @@ def factorial1(n: Int): Int = {
   val m = n-1 ; if (n == 0) {1} else {n * factorial1(m)}
 }
 
-
 def factorial2(n: Int): Int = {
   val m = n-1;
   if (n == 0) {1} else {n * factorial2(m)}
@@ -47,7 +46,6 @@ def sum(n: Int): Int = {
 def cycle(q:(Int,Int,Int)): (Int,Int,Int) = (q._2, q._3, q._1)
 
 /* Part 4 */
-
 
 def nameFromNum(presidentNum: Int): String = presidentNum match {
   case 41 => "George H. W. Bush"
@@ -147,8 +145,13 @@ def compose[A, B, C](f: A => B, g: B => C): A => C = {
 }
 
 /* Exercise 10 */
-def e1 = sys.error("todo")
-def e2 = sys.error("todo")
+def e1(x: Int): String = x.toString()
+def e2(s: String): Boolean = s.length > 0
+
+/*
+Result for compose(e1,e2): val res1: Int => Boolean = Lambda$2279/0x0000000800ae6040@695df41a
+Result for compose(e2,e1): Type mismatch
+*/
 
 def isEmpty[A](l: List[A]) = l match { 
   case Nil => true
@@ -183,8 +186,8 @@ def reverse[A](l: List[A]): List[A] = l match {
 def empty[K,V]: List[(K,V)] = List()
 
 /* Exercise 14 */
-def lookup[K, V](m: List[(K, V)], k: K): V = l match {
-  case Nil => Nil;
+def lookup[K, V](m: List[(K, V)], k: K): V = m match {
+  case Nil => sys.error(s"Key $k not found")
   case (key, value) :: tail => 
     if (key == k) {
       value
@@ -195,27 +198,56 @@ def lookup[K, V](m: List[(K, V)], k: K): V = l match {
 
 /* Exercise 15 */
 //RUN
-def update[K, V](m: List[(K, V)], k: K, v: V): List[(K, V)] = l match {
-  case Nil => Nil;
+def update[K, V](m: List[(K, V)], k: K, v: V): List[(K, V)] = m match {
+  case Nil => sys.error(s"Key $k not found")
   case (key, value) :: tail =>
     if (key == k){
-      (key : v) :: tail
+      (key,v) :: tail
     } else {
       (key, value) :: update(tail, k, v)
     }
 }
 
 /* Exercise 16 */
-def keys[K,V](m: List[(K,V)]): List[K] = sys.error("todo")
+def keys[K,V](m: List[(K,V)]): List[K] = m match {
+  case Nil => Nil;
+  case (key, value) :: tail => key :: keys(tail);
+}
 
 /* Exercise 17 */
-val presidentListMap = ListMap() // TODO
+val presidentListMap: ListMap[Int, String] = ListMap(
+  41 -> "George H. W. Bush",
+  42 -> "Bill Clinton",
+  43 -> "George W. Bush",
+  44 -> "Barack Obama",
+  45 -> "Donald J. Trump",
+  46 -> "Joseph R. Biden"
+) 
 
 /* Exercise 18 */
-def map12_withUpdate = sys.error("todo")
+
+def map12_withUpdate: List[(Int, String)] = {
+  val emptyMap: List[(Int, String)] = List.empty
+  update(update(update(emptyMap, 1, "a"), 2, "b"), 3, "c")
+}
 
 /* Exercise 19 */
-def list2map[K,V](l: List[(K,V)]): ListMap[K,V] = sys.error("todo")
+def list2map[K,V](l: List[(K,V)]): ListMap[K,V] = l match {
+  case Nil => ListMap.empty[K, V];
+  case (key, value) :: tail => list2map(tail) + (key -> value);
+}
 
 /* Exercise 20 */
-def election(votes: List[String]): ListMap[String,Int] = sys.error("todo")
+def election(votes: List[String]): ListMap[String,Int] = {
+  def helper(votes: List[String], currMap: ListMap[String, Int]): ListMap[String, Int] = votes match {
+    case Nil => currMap;
+    case head :: tail =>
+      val updatedMap = if (currMap.contains(head)){
+        currMap + (head -> (currMap(head) + 1)) //Increment count
+      } else {
+        currMap + (head -> 1)
+      }
+      helper(tail, updatedMap)
+  }
+  helper(votes, ListMap.empty[String, Int]) //Start by calling helper on empty list
+}
